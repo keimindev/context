@@ -1,5 +1,8 @@
 import React, { useState, useContext } from "react";
 
+//more components
+// fix- context api, redux (for more complex cases)
+
 const data = [
   { id:1, name: 'Koko' }, 
   { id:2, name: 'James'},
@@ -7,7 +10,11 @@ const data = [
   { id:4, name: 'Andy'}
 ]
 
-function App() {
+const PersonContext = React.createContext();
+// two components - Provider, Consumer
+
+
+function ContextAPI() {
   const [people, setPeople] = useState(data);
   const removePerson = (id) => {
     setPeople((people) => { 
@@ -15,19 +22,23 @@ function App() {
   }
   return (
     <>
-    <h3>Prop drilling</h3>
-    <List people={people} removePerson={removePerson}/>
+    <PersonContext.Provider value={{removePerson, people}}>
+    <h3>Context API / useContext</h3>
+    <List />
+    </PersonContext.Provider>
     </>
   );
 }
 
-const List = ( {people, removePerson}) => {
+const List = () => {
+  const mainData = useContext(PersonContext)
+
   return(
     <>
-    {people.map(person => {
+    {mainData.people.map(person => {
       return(
         <>
-        <SinglePerson key={person.id} {...person} removePerson={removePerson}/>
+        <SinglePerson key={person.id} {...person}/>
         </>
       )
     })}
@@ -35,7 +46,8 @@ const List = ( {people, removePerson}) => {
   )
 }
 
-const SinglePerson = ( {id, name, removePerson}) => {
+const SinglePerson = ( {id, name}) => {
+  const {removePerson}= useContext(PersonContext)
   return(
     <div className="item">
       <h4>{name}</h4>
@@ -44,4 +56,4 @@ const SinglePerson = ( {id, name, removePerson}) => {
   )
 }
 
-export default App;
+export default ContextAPI;
